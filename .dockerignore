@@ -1,0 +1,14 @@
+# to be excluded from docker context 
+.git
+.gitignore
+
+.docker
+
+.env/
+.venv/
+venv/
+
+app/__pycashe__/
+app/*/__pycashe__/
+app/*/*/__pycashe__/
+app/*/*/*/__pycashe__/

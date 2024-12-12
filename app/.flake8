@@ -1,0 +1,7 @@
+# default flake8 config file
+[flake8]
+exclude =
+    migrayions,
+    manage.py,
+    settings.py,
+    __pycashe__,

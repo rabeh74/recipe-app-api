@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      # build dockerfile inside or dir
+      context: .
+      args:
+        - DEV=true
+    # map between ports on local and docker
+    ports:
+      - "8000:8000"
+    # map project dirs , to make updates in local reflects to docker
+    # need not to rebuild it every time
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "
+            python3 manage.py migrate &&
+            python3 manage.py runserver 0.0.0.0:8000"
