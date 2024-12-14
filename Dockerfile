@@ -22,11 +22,12 @@ ARG DEV=false
 # env to provide any conflict between my project dependencies and image
 RUN python3 -m venv /py && \
     /py/bin/pip install --upgrade pip && \
+    # dependencies for psycopg2
     apk add --update --no-cache postgresql-client jpeg-dev &&\
     apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev zlib zlib-dev &&\
     /py/bin/pip install -r /tmp/requirements.txt && \
-    # to install this package just in devlopment stage 
+    # to install this package just in devlopment stage
     if [ $DEV = "true" ];then /py/bin/pip install -r /tmp/requirements.dev.txt;fi && \
     rm -rf /tmp && \
     apk del .tmp-build-deps &&\
