@@ -38,3 +38,18 @@ class ModelTests(TestCase):
              password='test123')
         self.assertTrue(user.is_staff)
         self.assertTrue(user.is_superuser)
+
+    def test_create_recipe(self):
+        ''' test for creating recipe '''
+        user=get_user_model().objects.create_user\
+            (email='test@example.com' ,
+            password='testpass123' ,)
+
+        recipe=models.Recipe.objects.create(
+            user=user,
+            title= 'simple recipe test',
+            time_minutes=5,
+            price=Decimal('15.5'),
+            description='sample recipe description '
+        )
+        self.assertEqual(str(recipe), recipe.title)
