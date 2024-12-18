@@ -1,8 +1,9 @@
 from rest_framework import (viewsets , mixins , status)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from recipe.serializers import (RecipeSerializer , RecipeDetailSerializer , TagSerializer)
-from core.models import Recipe , Tag
+from recipe.serializers import (RecipeSerializer , RecipeDetailSerializer ,
+                             TagSerializer , IngredientSerializer)
+from core.models import Recipe , Tag , Ingredient
 
 from rest_framework.response import Response
 
@@ -13,6 +14,16 @@ from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiTypes,
 )
+
+class BaserecipeItem(viewsets.ModelViewSet):
+    authentication_classes=[TokenAuthentication]
+    permission_classes=[IsAuthenticated]
+    def get_queryset(self):
+        return self.queryset.filter(user = self.request.user).order_by('-name')
+
+    def perform_create(self , serializer ):
+        serializer.save(user = self.request.user)
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class=RecipeDetailSerializer
@@ -32,17 +43,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(user = self.request.user)
 
 
-class TagViewSet(viewsets.ModelViewSet):
+class TagViewSet(BaserecipeItem):
     serializer_class = TagSerializer
-    authentication_classes=[TokenAuthentication]
-    permission_classes=[IsAuthenticated]
     queryset = Tag.objects.all()
 
-    def get_queryset(self):
-        return self.queryset.filter(user = self.request.user).order_by('-name')
 
-    def perform_create(self , serializer ):
-        serializer.save(user = self.request.user)
+class IngredientViewSet(BaserecipeItem):
+    serializer_class = IngredientSerializer
+    queryset = Ingredient.objects.all()
+
+
 
 
 

@@ -1,4 +1,4 @@
-version: '3.9'
+# version: '3.9'
 
 services:
   app:
@@ -24,7 +24,7 @@ services:
       - DB_USER=devuser
       - DB_PASS=devpass
 
-    
+
   db:
     image: postgres:15-alpine
     volumes:
