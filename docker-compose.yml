@@ -14,6 +14,7 @@ services:
     # need not to rebuild it every time
     volumes:
       - ./app:/app
+      - dev-static-data:/vol/web
     command: >
       sh -c "
             python3 manage.py migrate &&
@@ -35,4 +36,5 @@ services:
       - POSTGRES_PASSWORD=devpass
 volumes:
   dev-db-data:
+  # map static data to file in system
   dev-static-data:

@@ -22,7 +22,7 @@ ARG DEV=false
 # env to provide any conflict between my project dependencies and image
 RUN python3 -m venv /py && \
     /py/bin/pip install --upgrade pip && \
-    # dependencies for psycopg2
+    # dependencies for psycopg2 and pillow
     apk add --update --no-cache postgresql-client jpeg-dev &&\
     apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev zlib zlib-dev &&\
@@ -36,6 +36,7 @@ RUN python3 -m venv /py && \
         --disabled-password \
         --no-create-home \
         django-user &&\
+    # create dirs that serve static and media files 
     mkdir -p /vol/web/media && \
     mkdir -p /vol/web/static &&\
     chown -R django-user:django-user /vol &&\
