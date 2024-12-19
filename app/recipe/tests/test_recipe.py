@@ -348,7 +348,7 @@ class TestImageUpload(TestCase):
         )
         self.client.force_authenticate(self.user)
         self.recipe=create_recipe(user=self.user)
-    # run after test 
+    # run after test
     def tearDown(self):
         self.recipe.image.delete()
 
@@ -374,3 +374,50 @@ class TestImageUpload(TestCase):
         res=self.client.post(url , {'image':'khkhkh'})
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_filter_by_tags(self):
+        ''' test filtering recipe by tags '''
+        r1=create_recipe(user=self.user , title='test1')
+        r2=create_recipe(user=self.user , title='test2')
+        t1=Tag.objects.create(user=self.user , name='tag1')
+        t2=Tag.objects.create(user=self.user , name='tag2')
+        r3=create_recipe(user=self.user , title='test3')
+        r1.tags.add(t1)
+        r2.tags.add(t2)
+
+        params={'tags':f'{t1.id},{t2.id}'}
+        res=self.client.get(RECIPE_URL , params)
+
+        s1=RecipeSerializer(r1)
+        s2=RecipeSerializer(r2)
+        s3=RecipeSerializer(r3)
+
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)
+
+    def test_filter_by_ingredients(self):
+        ''' test filtering recipe by ingredients '''
+        r1=create_recipe(user=self.user , title='test1')
+        r2=create_recipe(user=self.user , title='test2')
+        ingred1=Ingredient.objects.create(user=self.user , name='ingred1')
+        ingred2=Ingredient.objects.create(user=self.user , name='ingred2')
+        r3=create_recipe(user=self.user , title='test3')
+        r1.ingredients.add(ingred1)
+        r2.ingredients.add(ingred2)
+
+        params={
+            'ingredients' : f'{ingred1.id},{ingred2.id}',
+        }
+
+        s1=RecipeSerializer(r1)
+        s2=RecipeSerializer(r2)
+        s3=RecipeSerializer(r3)
+
+        res=self.client.get(RECIPE_URL , params)
+
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)

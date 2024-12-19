@@ -82,3 +82,41 @@ class PrivateTagTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Tag.objects.filter(id=tag.id).exists())
 
+    def test_tags_assigned_to_recipe(self):
+        t1=Tag.objects.create(user=self.user , name='ing1')
+        t2=Tag.objects.create(user=self.user , name='ing2')
+
+        recipe=Recipe.objects.create(
+            user=self.user,
+            price=5.0,
+            time_minutes=10,
+            title='test ingred'
+        )
+        recipe.tags.add(t1)
+        s1=TagSerializer(t1)
+        s2=TagSerializer(t2)
+        res=self.client.get(TAG_URL , {'assigned_only':1})
+
+        self.assertIn(s1.data, res.data)
+        self.assertNotIn(s2.data, res.data)
+
+    def test_ingredients_assigned_unique(self):
+        t1=Tag.objects.create(user=self.user , name='ing1')
+        Tag.objects.create(user=self.user , name='ing2')
+        recipe1=Recipe.objects.create(
+            user=self.user,
+            price=5.0,
+            time_minutes=10,
+            title='test ingred'
+        )
+        recipe2=Recipe.objects.create(
+            user=self.user,
+            price=5.0,
+            time_minutes=10,
+            title='test ingred2'
+        )
+        recipe1.tags.add(t1)
+        recipe2.tags.add(t1)
+        res=self.client.get(TAG_URL , {'assigned_only':1})
+        self.assertEqual(len(res.data), 1)
+

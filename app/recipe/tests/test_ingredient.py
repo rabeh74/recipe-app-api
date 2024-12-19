@@ -88,3 +88,43 @@ class PrivateIngredientTestApi(TestCase):
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
         self.assertFalse(Ingredient.objects.filter(id=ingred.id).exists())
+
+    def test_ingredients_assigned_to_recipe(self):
+        in1=Ingredient.objects.create(user=self.user , name='ing1')
+        in2=Ingredient.objects.create(user=self.user , name='ing2')
+
+        recipe=Recipe.objects.create(
+            user=self.user,
+            price=5.0,
+            time_minutes=10,
+            title='test ingred'
+        )
+        recipe.ingredients.add(in1)
+        s1=IngredientSerializer(in1)
+        s2=IngredientSerializer(in2)
+        res=self.client.get(INGREDIENTS_URL , {'assigned_only':1})
+
+        self.assertIn(s1.data, res.data)
+        self.assertNotIn(s2.data, res.data)
+
+    def test_ingredients_assigned_unique(self):
+        in1=Ingredient.objects.create(user=self.user , name='ing1')
+        Ingredient.objects.create(user=self.user , name='ing2')
+
+        recipe1=Recipe.objects.create(
+            user=self.user,
+            price=5.0,
+            time_minutes=10,
+            title='test ingred'
+        )
+        recipe2=Recipe.objects.create(
+            user=self.user,
+            price=5.0,
+            time_minutes=10,
+            title='test ingred2'
+        )
+
+        recipe1.ingredients.add(in1)
+        recipe2.ingredients.add(in1)
+        res=self.client.get(INGREDIENTS_URL , {'assigned_only':1})
+        self.assertEqual(len(res.data), 1)
