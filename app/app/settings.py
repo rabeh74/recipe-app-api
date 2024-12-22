@@ -26,13 +26,11 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY' , 'changeme')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUG' , 0)))
 
-ALLOWED_HOSTS = ['localhost' ,]
-ALLOWED_HOSTS.extend(
-    filter(
-        None,
-        os.environ.get('DJANGO_ALLOWED_HOSTS' , '').split(','),
-    )
-)
+ALLOWED_HOSTS = ['localhost' ,'127.0.0.1' ,
+                'ec2-13-53-87-144.eu-north-1.compute.amazonaws.com' ,
+                '13.53.87.144',
+  ]
+
 
 
 
