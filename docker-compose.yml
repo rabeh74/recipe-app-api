@@ -24,6 +24,7 @@ services:
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=devpass
+      - DEBUG=1
 
 
   db:
